@@ -54,4 +54,5 @@ smart-crossing/
 
 ## Team
 - Sofia Grumelli
+- Sabina Frigerio
 - Valerio Galasso
