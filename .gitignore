@@ -1,0 +1,13 @@
+.cache/
+build/
+__pycache__/
+*.pyc
+*.o
+*.d
+*.a
+*.elf
+*.bin
+*.hex
+*.map
+*.tmp
+.DS_Store

@@ -1,0 +1,72 @@
+{
+  "demo_mode": "auto",
+  "camera": {
+    "resolution": [
+      1640,
+      1232
+    ],
+    "fps": 15,
+    "confidence": 0.5,
+    "analysis_hz": 2.0,
+    "video_hz": 10.0,
+    "detection_timeout_s": 1.5,
+    "model_label": "YoloX"
+  },
+  "detection": {
+    "min_conf": 0.3,
+    "merge_threshold": 0.3,
+    "merge_metric": "ios"
+  },
+  "tracker": {
+    "iou_threshold": 0.1,
+    "max_age": 5,
+    "max_center_dist": 1.0
+  },
+  "zones": {
+    "count_line": [
+      [
+        0.3,
+        0.6
+      ],
+      [
+        0.7,
+        0.6
+      ]
+    ]
+  },
+  "sensors": {
+    "sources": {
+      "N": "real",
+      "S": "off",
+      "E": "off",
+      "O": "off"
+    },
+    "poll_hz": 20.0,
+    "scale": 24.0,
+    "stopped_kmh": 5.0,
+    "stale_s": 0.5,
+    "pass_distance_m": 2.0,
+    "pass_rise_m": 3.0
+  },
+  "rule": {
+    "t_reaction_s": 1.0,
+    "decel_ms2": 6.0,
+    "brake_threshold_ms2": 2.0,
+    "attention_margin": 1.5,
+    "state_hold_s": 2.0,
+    "road_conditions": [
+      [
+        5.5,
+        "asciutto"
+      ],
+      [
+        4.0,
+        "bagnato"
+      ],
+      [
+        0.0,
+        "scivoloso"
+      ]
+    ]
+  }
+}

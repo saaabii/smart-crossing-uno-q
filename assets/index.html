@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeSafe</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body data-page="dashboard">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><use href="#besafe-logo"/></svg>
+      <span class="brand-name">Be<b>Safe</b></span>
+    </div>
+    <div class="status" id="status"><span class="dot"></span><span id="status-text">Connessione…</span></div>
+    <div class="ai-badge" title="YOLO e regola di pericolo girano sulla UNO Q, nessun dato inviato in cloud">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2.5v3.5M15 2.5v3.5M9 18v3.5M15 18v3.5M2.5 9h3.5M2.5 15h3.5M18 9h3.5M18 15h3.5"/></svg>
+      AI locale
+    </div>
+    <nav class="nav">
+      <a href="#contatori">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="4" r="2"/><path d="M8 21l3.2-7.5 3 2.8.8 4.7"/><path d="M11.2 13.5l1.3-5.5"/><path d="M7.5 11.5l2.6-3.3h3.2l2.7 3.6"/></svg>
+        Attraversamenti
+      </a>
+      <span class="sep"></span>
+      <a href="segnale.html" target="_blank">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Segnale
+      </a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <!-- Video (JPEG dal messaggio "frame") + canvas sovrapposto: tutta la colonna sinistra -->
+    <section class="stage-col">
+      <div class="video-card" id="video-card">
+        <div class="frame" id="frame">
+          <canvas id="video"></canvas>
+          <canvas id="overlay"></canvas>
+          <div class="placeholder" id="placeholder">In attesa del video…</div>
+        </div>
+        <div class="camera-bar" id="camera-bar">
+          <span>Camera</span><span class="bar-sep"></span>
+          <span id="res">—</span><span class="bar-sep"></span>
+          <span id="cam-age">analisi —</span><span class="bar-sep"></span>
+          <span id="fps">0 FPS</span><span class="bar-sep"></span>
+          <span id="model">YoloX · on-device</span>
+          <span class="line-hint" id="line-hint" hidden></span>
+          <button id="set-line" class="line-btn" type="button">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="17" r="2"/><circle cx="19" cy="7" r="2"/><path d="M6.7 15.9 17.3 8.1" stroke-dasharray="3 2.5"/></svg>
+            Imposta linea
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Colonna destra -->
+    <aside class="side">
+      <!-- Pannello demo: solo con ?demo=1 -->
+      <section class="card demo-card" id="demo-card" hidden>
+        <h2>Demo</h2>
+        <div class="demo-row">
+          <label class="demo-select">Sensori
+            <select id="demo-mode">
+              <option value="auto">auto</option>
+              <option value="manuale">manuale</option>
+              <option value="off">off</option>
+            </select>
+          </label>
+          <button id="scenario" class="scenario-btn" type="button">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20.5h20L12 3z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.3" r="0.5"/></svg>
+            Genera pericolo
+          </button>
+          <button id="reset-counts" class="scenario-btn" type="button">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            Azzera contatori
+          </button>
+        </div>
+      </section>
+
+      <section class="card" id="soglie">
+        <h2>Soglie
+          <svg id="sync" class="ico sync" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4v6h-6"/><path d="M20.5 15a9 9 0 1 1-2.1-9.4L21 10"/></svg>
+        </h2>
+        <div class="slider-row">
+          <label for="tr">Tempo di reazione</label>
+          <span class="valbox"><output id="tr-val">—</output> s</span>
+          <input id="tr" type="range" min="0.5" max="2" step="0.1" value="1" disabled>
+        </div>
+        <div class="slider-row">
+          <label for="decel">Decelerazione di riferimento <span class="badge" id="condition">—</span></label>
+          <span class="valbox"><output id="decel-val">—</output> m/s²</span>
+          <input id="decel" type="range" min="3" max="8" step="0.1" value="6" disabled>
+        </div>
+        <div class="slider-row">
+          <label for="brake">Soglia di frenata</label>
+          <span class="valbox"><output id="brake-val">—</output> m/s²</span>
+          <input id="brake" type="range" min="0.5" max="4" step="0.1" value="2" disabled>
+        </div>
+        <p class="hint">Spazio di arresto = v·t<sub>r</sub> + v²/(2a). Un veicolo che frena più della soglia
+          è pericoloso solo se la sua frenata non basta a fermarlo prima delle strisce.</p>
+      </section>
+
+      <section class="card">
+        <h2>Stato attuale</h2>
+        <div class="state-box s-RIPOSO" id="state-box">
+          <svg class="state-ico ico-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+          <svg class="state-ico ico-alert" viewBox="0 0 24 24"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="currentColor"/><path d="M12 9v5.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.3" fill="#fff"/></svg>
+          <div>
+            <div class="state-name" id="state-name">RIPOSO</div>
+            <div class="state-sev" id="state-sev">Gravità: Nessuna</div>
+          </div>
+          <div class="sev-bar"><span id="sev-fill"></span></div>
+        </div>
+        <div class="critical" id="critical">—</div>
+      </section>
+
+      <section class="card sensors-card" id="sensors-card">
+        <h2>Sensori <span class="h2-note" id="veh-total">0 veicoli passati</span></h2>
+        <div class="sensors">
+          <svg class="cross" id="cross" viewBox="0 0 200 200" aria-label="Incrocio visto dall'alto">
+            <rect class="center" x="78" y="78" width="44" height="44"/>
+            <g class="arm" data-side="N"><rect x="78" y="0" width="44" height="78"/><line x1="78" y1="76" x2="122" y2="76"/><text x="134" y="16">N</text><rect class="car" x="91" y="0" width="18" height="10" rx="3"/></g>
+            <g class="arm" data-side="S"><rect x="78" y="122" width="44" height="78"/><line x1="78" y1="124" x2="122" y2="124"/><text x="134" y="194">S</text><rect class="car" x="91" y="0" width="18" height="10" rx="3"/></g>
+            <g class="arm" data-side="E"><rect x="122" y="78" width="78" height="44"/><line x1="124" y1="78" x2="124" y2="122"/><text x="190" y="70">E</text><rect class="car" x="0" y="91" width="10" height="18" rx="3"/></g>
+            <g class="arm" data-side="O"><rect x="0" y="78" width="78" height="44"/><line x1="76" y1="78" x2="76" y2="122"/><text x="10" y="70">O</text><rect class="car" x="0" y="91" width="10" height="18" rx="3"/></g>
+          </svg>
+          <ul class="sides" id="sides">
+            <li data-side="N"></li><li data-side="E"></li><li data-side="S"></li><li data-side="O"></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" id="contatori">
+        <h2>Persone <span class="h2-note">rilevate · attraversamenti della linea</span></h2>
+        <div class="counter">
+          <svg class="cnt-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="4" r="2"/><path d="M8 21l3.2-7.5 3 2.8.8 4.7"/><path d="M11.2 13.5l1.3-5.5"/><path d="M7.5 11.5l2.6-3.3h3.2l2.7 3.6"/></svg>
+          <div class="cnt-main">
+            <div class="cnt-label">Pedoni rilevati</div>
+            <div class="cnt-total" id="det-pedone">0</div>
+            <div class="cnt-cross">attraversamenti <ul class="cnt-dirs" id="dirs-pedone"></ul></div>
+          </div>
+        </div>
+        <div class="counter">
+          <svg class="cnt-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5l4-7.5h5.5l3.5 7.5"/><path d="M9.5 9l3.5 7.5H5.5"/><path d="M13.5 5.5H16l-1 3.5"/></svg>
+          <div class="cnt-main">
+            <div class="cnt-label">Ciclisti rilevati</div>
+            <div class="cnt-total" id="det-ciclista">0</div>
+            <div class="cnt-cross">attraversamenti <ul class="cnt-dirs" id="dirs-ciclista"></ul></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Ultimi eventi di pericolo</h2>
+        <ul class="events" id="events"><li class="empty">Nessun evento</li></ul>
+      </section>
+
+      <details class="debug">
+        <summary>Debug · JSON grezzo</summary>
+        <pre id="json">—</pre>
+      </details>
+    </aside>
+  </main>
+
+  <!-- Logo BeSafe: scudo verde con figura che cammina sulle strisce -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="besafe-logo" viewBox="0 0 64 64">
+      <path d="M32 3 8 11.5v18.2C8 44.6 18.2 56.6 32 61c13.8-4.4 24-16.4 24-31.3V11.5L32 3z" fill="#16A34A"/>
+      <path d="M32 7.6 12 14.7v15C12 42.4 20.6 52.6 32 56.6c11.4-4 20-14.2 20-26.9v-15L32 7.6z" fill="#22C55E"/>
+      <g fill="#fff"><rect x="17" y="43" width="6" height="3.2" rx="1"/><rect x="26" y="43" width="6" height="3.2" rx="1"/><rect x="35" y="43" width="6" height="3.2" rx="1"/><rect x="44" y="43" width="3.5" height="3.2" rx="1"/><circle cx="33.5" cy="16" r="3.4"/></g>
+      <g fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M32.4 21.6 30 31.5"/><path d="M30 31.5l-4.4 7.6"/><path d="M30 31.5l5.2 3.4 1.6 4.8"/><path d="M24.8 27.6l4.6-5.2h4.6l3.8 4.6"/></g>
+    </symbol>
+  </svg>
+
+  <script src="libs/socket.io.min.js"></script>
+  <script src="libs/arduino.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
