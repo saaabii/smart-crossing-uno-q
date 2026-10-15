@@ -1,53 +1,58 @@
 # BeSafe – Smart Crossing 🚦
 
-Sistema per attraversamenti pedonali più sicuri basato su **Arduino UNO Q**, con computer vision e AI che girano **in locale sulla board**.
+A system for safer pedestrian crossings built on **Arduino UNO Q**, with computer vision and AI running **locally on the board**.
 
-Progetto sviluppato per la challenge **Smart Crossing** (hackathon, ottobre 2026).
+Project developed for the **Smart Crossing** challenge (hackathon, October 2026).
 
-## Il problema
-Agli attraversamenti pedonali molti incidenti avvengono perché pedoni, ciclisti e veicoli non si accorgono l'uno dell'altro in tempo.
+## 🎥 Watch the video
+See BeSafe in action on a real crossing: **[Watch the demo video](https://www.youtube.com/watch?v=EA7CRsFscs4)**
 
-## La nostra soluzione
-BeSafe osserva l'attraversamento con una telecamera e:
-- **riconosce** pedoni, ciclisti e veicoli
-- **stima velocità e traiettorie** per prevedere un possibile conflitto *prima* che avvenga
-- **segnala il pericolo** in tempo reale con avvisi luminosi e sonori
-- **conta gli attraversamenti** per direzione
+[![BeSafe demo video](https://img.youtube.com/vi/EA7CRsFscs4/hqdefault.jpg)](https://www.youtube.com/watch?v=EA7CRsFscs4)
 
-Il sistema è stato testato su un attraversamento reale a Torino.
+## The problem
+Many accidents at pedestrian crossings happen because pedestrians, cyclists and vehicles don't notice each other in time.
 
-## Dashboard web
-L'app include un'interfaccia web in tempo reale con:
-- video live con i riconoscimenti
-- stato di pericolo
-- soglie regolabili
-- contatori degli attraversamenti
+## Our solution
+BeSafe watches the crossing through a camera and:
+- **detects** pedestrians, cyclists and vehicles
+- **estimates speeds and trajectories** to predict a potential conflict *before* it happens
+- **signals danger** in real time with light and sound alerts
+- **counts crossings** by direction
 
-## Struttura del progetto
+The system was tested on a real crossing in Turin.
+
+## Web dashboard
+The app includes a real-time web interface with:
+- live video with detections
+- danger status
+- adjustable thresholds
+- crossing counters
+
+## Project structure
 ```
 smart-crossing/
-├── app.yaml            # configurazione dell'app Arduino App Lab
+├── app.yaml            # Arduino App Lab app configuration
 ├── sketch/
-│   └── sketch.ino      # codice del microcontrollore (sensori, LED, buzzer, display)
+│   └── sketch.ino      # microcontroller code (sensors, LEDs, buzzer, display)
 ├── python/
-│   ├── main.py         # logica principale: riconoscimento e regole di pericolo
-│   ├── frame_data.py   # gestione dei dati dei frame video
-│   └── config.json     # parametri e soglie
+│   ├── main.py         # main logic: detection and danger rules
+│   ├── frame_data.py   # video frame data handling
+│   └── config.json     # parameters and thresholds
 └── assets/
     ├── index.html      # dashboard
-    ├── segnale.html    # pagina del segnale
+    ├── segnale.html    # signal page
     ├── app.js
     └── style.css
 ```
 
-## Come avviarlo
-1. Collega la Arduino UNO Q e la telecamera
-2. Apri il progetto in **Arduino App Lab**
-3. Premi **Run**
-4. Apri la dashboard dal link mostrato da App Lab
+## How to run it
+1. Connect the Arduino UNO Q and the camera
+2. Open the project in **Arduino App Lab**
+3. Press **Run**
+4. Open the dashboard from the link shown by App Lab
 
-## Tecnologie
-- Arduino UNO Q (Linux + microcontrollore)
+## Technologies
+- Arduino UNO Q (Linux + microcontroller)
 - Arduino App Lab
 - Python, C++ (Arduino)
 - HTML, CSS, JavaScript, Socket.IO
